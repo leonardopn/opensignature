@@ -1,35 +1,91 @@
+import { Button } from "@chakra-ui/react";
 import { KonvaEventObject } from "konva/lib/Node";
-import { Text as TextType } from "konva/lib/shapes/Text";
 import React from "react";
-import { Image, KonvaNodeComponent, Layer, Stage, Text } from "react-konva";
+import { Image, Layer, Stage } from "react-konva";
 import useImage from "use-image";
 
+interface elementProps {
+    x: number;
+    y: number;
+}
+
 export const Canvas = () => {
-    const [element, setElement] = React.useState<undefined | KonvaNodeComponent<TextType, >>();
+    const [elements, setElements] = React.useState<elementProps[]>([]);
+    const [imageButton] = useImage("/assets/button_sign.png");
+    const [imagePdf] = useImage("/teste.png");
 
     const sizes = {
-        width: 1000,
-        height: window.innerHeight + 400,
-    };
-
-    const PdfImage = () => {
-        const [image] = useImage("/teste.png");
-        return <Image width={sizes.width} height={sizes.height} image={image} />;
+        width: 850,
+        height: 1000,
     };
 
     function addElementInCanvas(event: KonvaEventObject<MouseEvent>) {
         const stage = event.target.getStage();
-        console.log(stage?.getPointerPosition());
         const positions = stage?.getPointerPosition();
+        if (positions) {
+            setElements([...elements, { x: positions?.x, y: positions?.y }]);
+        }
+    }
 
-        setElement(<Text text="Testando" x={positions?.x} y={positions?.y}></Text>);
+    function removeElement(key: number) {
+        setElements(elements.filter((_, index) => index !== key));
+    }
+
+    function changeElementPosition(key: number, x: number, y: number) {
+        const newElements = elements.map((element, index) => {
+            if (index === key) {
+                return { ...element, x, y };
+            }
+            return element;
+        });
+        setElements(newElements);
     }
 
     return (
-        <Stage onClick={addElementInCanvas} width={sizes.width} height={sizes.height}>
-            <Layer>
-                <PdfImage></PdfImage>
-            </Layer>
-        </Stage>
+        <>
+            <Stage onClick={addElementInCanvas} width={sizes.width} height={sizes.height}>
+                <Layer
+                    onMouseEnter={(e) => {
+                        const stage = e.target.getStage();
+                        if (stage) {
+                            const container = stage.container();
+                            container.style.cursor = "copy";
+                        }
+                    }}
+                >
+                    <Image width={sizes.width} height={sizes.height} image={imagePdf} />
+                    {elements.map((element, index) => {
+                        return (
+                            <Image
+                                key={index}
+                                draggable
+                                onClick={(_) => removeElement(index)}
+                                image={imageButton}
+                                x={element.x}
+                                y={element.y}
+                                onMouseEnter={(e) => {
+                                    const stage = e.target.getStage();
+                                    if (stage) {
+                                        const container = stage.container();
+                                        container.style.cursor = "move";
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    const stage = e.target.getStage();
+                                    if (stage) {
+                                        const container = stage.container();
+                                        container.style.cursor = "copy";
+                                    }
+                                }}
+                                onDragEnd={(e) => {
+                                    changeElementPosition(index, e.target.x(), e.target.y());
+                                }}
+                            />
+                        );
+                    })}
+                </Layer>
+            </Stage>
+            <Button onClick={(e) => console.log(elements)}>Enviar</Button>
+        </>
     );
 };
