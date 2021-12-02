@@ -2,11 +2,13 @@ import { Button } from "@chakra-ui/react";
 import { KonvaEventObject } from "konva/lib/Node";
 import React from "react";
 import { Image, Layer, Stage } from "react-konva";
+import Popup from "reactjs-popup";
 import useImage from "use-image";
 
 interface elementProps {
     x: number;
     y: number;
+    image: HTMLImageElement | undefined;
 }
 
 export const Canvas = () => {
@@ -23,7 +25,7 @@ export const Canvas = () => {
         const stage = event.target.getStage();
         const positions = stage?.getPointerPosition();
         if (positions) {
-            setElements([...elements, { x: positions?.x, y: positions?.y }]);
+            setElements([...elements, { x: positions?.x, y: positions?.y, image: imageButton }]);
         }
     }
 
@@ -41,8 +43,13 @@ export const Canvas = () => {
         setElements(newElements);
     }
 
+    function sign() {}
+
     return (
         <>
+            <Popup  modal>
+                <span> Modal content </span>
+            </Popup>
             <Stage onClick={addElementInCanvas} width={sizes.width} height={sizes.height}>
                 <Layer
                     onMouseEnter={(e) => {
@@ -60,7 +67,7 @@ export const Canvas = () => {
                                 key={index}
                                 draggable
                                 onClick={(_) => removeElement(index)}
-                                image={imageButton}
+                                image={element.image}
                                 x={element.x}
                                 y={element.y}
                                 onMouseEnter={(e) => {
