@@ -5,9 +5,9 @@ import { theme } from "../styles/theme/theme";
 
 export const App = () => (
     <ChakraProvider theme={theme}>
-        <Flex justifyContent="space-between">
+        <Flex>
             <SelectorBar></SelectorBar>
-            <Box m="8">
+            <Box m="8" flex="1" overflow="auto" maxWidth={window.innerWidth - 220} maxHeight={window.innerHeight-66}>
                 <Canvas></Canvas>
             </Box>
         </Flex>

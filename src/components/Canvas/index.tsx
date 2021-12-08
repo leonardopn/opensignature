@@ -1,8 +1,11 @@
-import { Button } from "@chakra-ui/react";
+import { Button, HStack } from "@chakra-ui/react";
 import { KonvaEventObject } from "konva/lib/Node";
+import { Stage as StageRef } from "konva/lib/Stage";
 import React from "react";
+import { RiZoomInLine, RiZoomOutLine } from "react-icons/ri";
 import { Image, Layer, Stage } from "react-konva";
 import Popup from "reactjs-popup";
+import { PopupActions } from "reactjs-popup/dist/types";
 import useImage from "use-image";
 
 interface elementProps {
@@ -14,12 +17,38 @@ interface elementProps {
 export const Canvas = () => {
     const [elements, setElements] = React.useState<elementProps[]>([]);
     const [imageButton] = useImage("/assets/button_sign.png");
-    const [imagePdf] = useImage("/teste.png");
+    const [imagePdf] = useImage("/teste2.png");
 
-    const sizes = {
-        width: 850,
-        height: 1000,
-    };
+    const modalRef = React.useRef<PopupActions>(null);
+    const canvasRef = React.useRef<StageRef>(null);
+
+    const [sizes, setSizes] = React.useState({
+        width: imagePdf?.width,
+        height: imagePdf?.height,
+    });
+
+    const [zoom, setZoom] = React.useState(1);
+
+    React.useEffect(() => {
+        setSizes({
+            width: imagePdf?.width,
+            height: imagePdf?.height,
+        });
+    }, [imagePdf?.width, imagePdf?.height, setSizes]);
+
+    function zoomIn() {
+        if (imagePdf?.height && imagePdf?.width) {
+            setSizes({ width: imagePdf?.width * (zoom + 0.1), height: imagePdf?.height * (zoom + 0.1) });
+            setZoom(zoom + 0.1);
+        }
+    }
+
+    function zoomOut() {
+        if (imagePdf?.height && imagePdf?.width) {
+            setSizes({ width: imagePdf?.width * (zoom - 0.1), height: imagePdf?.height * (zoom - 0.1) });
+            setZoom(zoom - 0.1);
+        }
+    }
 
     function addElementInCanvas(event: KonvaEventObject<MouseEvent>) {
         const stage = event.target.getStage();
@@ -43,14 +72,21 @@ export const Canvas = () => {
         setElements(newElements);
     }
 
-    function sign() {}
+    function sign() {
+        modalRef.current?.open();
+    }
 
     return (
         <>
-            <Popup  modal>
-                <span> Modal content </span>
-            </Popup>
-            <Stage onClick={addElementInCanvas} width={sizes.width} height={sizes.height}>
+            <HStack spacing="2" mb="3">
+                <Button colorScheme="green" leftIcon={<RiZoomInLine />} onClick={zoomIn}>
+                    Zoom In
+                </Button>
+                <Button colorScheme="red" leftIcon={<RiZoomOutLine />} onClick={zoomOut}>
+                    Zoom Out
+                </Button>
+            </HStack>
+            <Stage ref={canvasRef} width={sizes.width} height={sizes.height}>
                 <Layer
                     onMouseEnter={(e) => {
                         const stage = e.target.getStage();
@@ -60,13 +96,13 @@ export const Canvas = () => {
                         }
                     }}
                 >
-                    <Image width={sizes.width} height={sizes.height} image={imagePdf} />
+                    <Image image={imagePdf} width={sizes.width} height={sizes.height} />
                     {elements.map((element, index) => {
                         return (
                             <Image
                                 key={index}
                                 draggable
-                                onClick={(_) => removeElement(index)}
+                                onClick={(e) => sign()}
                                 image={element.image}
                                 x={element.x}
                                 y={element.y}
@@ -92,7 +128,27 @@ export const Canvas = () => {
                     })}
                 </Layer>
             </Stage>
-            <Button onClick={(e) => console.log(elements)}>Enviar</Button>
+            {/* <Button
+                draggable="true"
+                onDragEnd={(e) => {
+                    e.preventDefault();
+                    canvasRef.current?.setPointersPositions(e);
+                    const positions = canvasRef.current?.getPointerPosition();
+                    if (positions) {
+                        setElements([...elements, { x: positions?.x, y: positions?.y, image: imageButton }]);
+                    }
+                }}
+            >
+                Enviar
+            </Button> */}
+            {/* {elements.map((element, index) => (
+                <p>
+                    X: {element.x} Y: {element.y}
+                </p>
+            ))} */}
+            <Popup ref={modalRef} modal>
+                <span> Modal content </span>
+            </Popup>
         </>
     );
 };
