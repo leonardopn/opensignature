@@ -18,45 +18,78 @@ interface elementProps {
 export const Canvas = () => {
     const [elements, setElements] = React.useState<elementProps[]>([]);
     const [imageButton] = useImage("/assets/button_sign.png");
-    const [imagePdf] = useImage("/teste2.png");
+    const [imagePdf] = useImage("/teste2.jpg");
 
     const modalRef = React.useRef<PopupActions>(null);
     const canvasRef = React.useRef<StageRef>(null);
 
-    const [sizes, setSizes] = React.useState({
+    const [sizesCanvas, setSizesCanvas] = React.useState({
+        width: imagePdf?.width,
+        height: imagePdf?.height,
+    });
+
+    const [sizesImage, setSizesImage] = React.useState({
         width: imagePdf?.width,
         height: imagePdf?.height,
     });
 
     const [zoom, setZoom] = React.useState(1);
-    const [rotate, setRotate] = React.useState(0);
+    const [rotate, setRotate] = React.useState({ degree: 0, x: 0, y: 0 });
 
     React.useEffect(() => {
-        setSizes({
+        setSizesCanvas({
             width: imagePdf?.width,
             height: imagePdf?.height,
         });
-    }, [imagePdf?.width, imagePdf?.height, setSizes]);
+        setSizesImage({
+            width: imagePdf?.width,
+            height: imagePdf?.height,
+        });
+    }, [imagePdf?.width, imagePdf?.height, setSizesImage, setSizesCanvas]);
 
     function zoomIn() {
         if (imagePdf?.height && imagePdf?.width) {
-            setSizes({ width: imagePdf?.width * (zoom + 0.1), height: imagePdf?.height * (zoom + 0.1) });
+            setSizesImage({ width: imagePdf?.width * (zoom + 0.1), height: imagePdf?.height * (zoom + 0.1) });
+            // setSizesCanvas({ width: imagePdf?.width * (zoom + 0.1), height: imagePdf?.height * (zoom + 0.1) });
             setZoom(zoom + 0.1);
         }
     }
 
     function zoomOut() {
         if (imagePdf?.height && imagePdf?.width) {
-            setSizes({ width: imagePdf?.width * (zoom - 0.1), height: imagePdf?.height * (zoom - 0.1) });
+            setSizesImage({ width: imagePdf?.width * (zoom - 0.1), height: imagePdf?.height * (zoom - 0.1) });
+            // setSizesCanvas({ width: imagePdf?.width * (zoom + 0.1), height: imagePdf?.height * (zoom + 0.1) });
             setZoom(zoom - 0.1);
         }
     }
 
     function rotateRight() {
-        if (rotate < 360) {
-            setRotate(rotate + 90);
-        } else {
-            setRotate(0);
+        switch (rotate.degree) {
+            case 90:
+                setSizesCanvas({ width: sizesCanvas.height, height: sizesCanvas.width });
+                setRotate({
+                    ...rotate,
+                    degree: rotate.degree + 90,
+                    x: sizesCanvas.height ? sizesCanvas.height : 0,
+                    y: sizesCanvas.width ? sizesCanvas.width : 0,
+                });
+                break;
+            case 180:
+                setSizesCanvas({ width: sizesCanvas.height, height: sizesCanvas.width });
+                setRotate({ ...rotate, degree: rotate.degree + 90, x: 0, y: sizesCanvas.width ? sizesCanvas.width : 0 });
+                break;
+            case 270:
+                setSizesCanvas({ width: sizesCanvas.height, height: sizesCanvas.width });
+                setRotate({ ...rotate, degree: rotate.degree + 90, x: 0, y: 0 });
+                break;
+            case 360:
+                setSizesCanvas({ width: sizesCanvas.height, height: sizesCanvas.width });
+                setRotate({ ...rotate, degree: 90, x: sizesCanvas.height ? sizesCanvas.height : 0 });
+                break;
+            default:
+                setSizesCanvas({ width: sizesCanvas.height, height: sizesCanvas.width });
+                setRotate({ ...rotate, degree: rotate.degree + 90, x: sizesCanvas.height ? sizesCanvas.height : 0 });
+                break;
         }
     }
 
@@ -99,7 +132,14 @@ export const Canvas = () => {
                     Rodar
                 </Button>
             </HStack>
-            <Stage ref={canvasRef} width={sizes.width} height={sizes.height}>
+            <Stage
+                ref={canvasRef}
+                width={sizesCanvas.width}
+                height={sizesCanvas.height}
+                rotation={rotate.degree}
+                x={rotate.x}
+                y={rotate.y}
+            >
                 <Layer
                     onMouseEnter={(e) => {
                         const stage = e.target.getStage();
@@ -109,7 +149,7 @@ export const Canvas = () => {
                         }
                     }}
                 >
-                    <Image image={imagePdf} width={sizes.width} height={sizes.height} />
+                    <Image image={imagePdf} width={sizesImage.width} height={sizesImage.height} />
                     {elements.map((element, index) => {
                         return (
                             <Image
