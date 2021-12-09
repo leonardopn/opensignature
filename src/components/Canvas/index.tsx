@@ -3,6 +3,7 @@ import { KonvaEventObject } from "konva/lib/Node";
 import { Stage as StageRef } from "konva/lib/Stage";
 import React from "react";
 import { RiZoomInLine, RiZoomOutLine } from "react-icons/ri";
+import { FiRotateCw, FiRotateCcw } from "react-icons/fi";
 import { Image, Layer, Stage } from "react-konva";
 import Popup from "reactjs-popup";
 import { PopupActions } from "reactjs-popup/dist/types";
@@ -28,6 +29,7 @@ export const Canvas = () => {
     });
 
     const [zoom, setZoom] = React.useState(1);
+    const [rotate, setRotate] = React.useState(0);
 
     React.useEffect(() => {
         setSizes({
@@ -47,6 +49,14 @@ export const Canvas = () => {
         if (imagePdf?.height && imagePdf?.width) {
             setSizes({ width: imagePdf?.width * (zoom - 0.1), height: imagePdf?.height * (zoom - 0.1) });
             setZoom(zoom - 0.1);
+        }
+    }
+
+    function rotateRight() {
+        if (rotate < 360) {
+            setRotate(rotate + 90);
+        } else {
+            setRotate(0);
         }
     }
 
@@ -84,6 +94,9 @@ export const Canvas = () => {
                 </Button>
                 <Button colorScheme="red" leftIcon={<RiZoomOutLine />} onClick={zoomOut}>
                     Zoom Out
+                </Button>
+                <Button colorScheme="blue" leftIcon={<FiRotateCw />} onClick={rotateRight}>
+                    Rodar
                 </Button>
             </HStack>
             <Stage ref={canvasRef} width={sizes.width} height={sizes.height}>
