@@ -1,7 +1,11 @@
-import { Button } from "@chakra-ui/react";
+import { Button, ButtonProps as ChakraButtonProps } from "@chakra-ui/react";
 import { BsFillPenFill } from "react-icons/bs";
 
-export const ButtonSign = () => {
+interface ButtonSignProps extends ChakraButtonProps {
+    
+}
+
+export const ButtonSign = ({ ...rest }: ButtonSignProps) => {
     return (
         <Button
             draggable="true"
@@ -10,6 +14,7 @@ export const ButtonSign = () => {
             p="2"
             borderRadius="10"
             rightIcon={<BsFillPenFill />}
+            {...rest}
         >
             Assinar
         </Button>
