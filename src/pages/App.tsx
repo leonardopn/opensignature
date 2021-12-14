@@ -4,17 +4,35 @@ import { GoArrowDown } from "react-icons/go";
 import useImage from "use-image";
 import { Canvas } from "../components/Canvas";
 import { SelectorBar } from "../components/SelectorBar";
+import { regraDe3 } from "../helper/calc";
 import { theme } from "../styles/theme/theme";
+
+interface elementsProps {
+    type: string;
+    position: { x: number; y: number };
+    positionInitial: { x: number; y: number };
+}
 
 export const App = () => {
     const [coordinates, setCoordinates] = React.useState({ x: 0, y: 0 });
     const [sizes, setSizes] = React.useState({ width: 0, height: 0 });
-    const [zoom, setZoom] = React.useState(1);
+    const [zoom, setZoom] = React.useState(0.7);
+    const [elements, setElements] = React.useState<elementsProps[]>([]);
     const [imagePdf] = useImage("/teste.png");
 
     React.useEffect(() => {
         if (imagePdf?.width && imagePdf?.height) {
             setSizes({ width: imagePdf?.width * zoom, height: imagePdf?.height * zoom });
+            const newArray = elements.map((el) => {
+                return {
+                    ...el,
+                    position: {
+                        x: regraDe3(imagePdf?.width, el.positionInitial.x, imagePdf?.width * zoom),
+                        y: regraDe3(imagePdf?.height, el.positionInitial.y, imagePdf?.height * zoom),
+                    },
+                };
+            });
+            setElements(newArray);
         }
     }, [zoom, imagePdf]);
 
@@ -35,12 +53,8 @@ export const App = () => {
                             onChange={(e) => setZoom(+e.target.value)}
                             width="fit-content"
                         >
-                            <option value="0.1">10%</option>
-                            <option value="0.2">20%</option>
-                            <option value="0.3">30%</option>
-                            <option value="0.4">40%</option>
                             <option value="0.5">50%</option>
-                            <option value="0.5">60%</option>
+                            <option value="0.6">60%</option>
                             <option value="0.7">70%</option>
                             <option value="0.8">80%</option>
                             <option value="0.9">90%</option>
@@ -54,7 +68,13 @@ export const App = () => {
                         </Text>
                     </HStack>
                     <Box id="scroll-box" flex="1" overflow="auto" maxWidth={window.innerWidth - 220}>
-                        <Canvas sizes={sizes} image={imagePdf} setPosition={setCoordinates}></Canvas>
+                        <Canvas
+                            elements={elements}
+                            setElements={setElements}
+                            sizes={sizes}
+                            image={imagePdf}
+                            setPosition={setCoordinates}
+                        ></Canvas>
                     </Box>
                 </Flex>
             </Flex>

@@ -1,21 +1,29 @@
 import { Box, Image } from "@chakra-ui/react";
 import React, { Dispatch, SetStateAction } from "react";
+import { regraDe3 } from "../../helper/calc";
 import { ButtonSign } from "../ButtonSign";
 
 interface canvasProps {
     setPosition: Dispatch<SetStateAction<{ x: number; y: number }>>;
     image: HTMLImageElement | undefined;
     sizes: { width: number; height: number };
+    elements: {
+        type: string;
+        position: { x: number; y: number };
+        positionInitial: { x: number; y: number };
+    }[];
+    setElements: Dispatch<
+        SetStateAction<
+            {
+                type: string;
+                position: { x: number; y: number };
+                positionInitial: { x: number; y: number };
+            }[]
+        >
+    >;
 }
 
-interface elementsProps {
-    type: string;
-    position: { x: number; y: number };
-}
-
-export const Canvas = ({ setPosition, image, sizes }: canvasProps) => {
-    const [elements, setElements] = React.useState<elementsProps[]>([]);
-
+export const Canvas = ({ setPosition, image, sizes, elements, setElements }: canvasProps) => {
     function setCoordinates(x: number, y: number) {
         setPosition({
             x,
@@ -24,16 +32,7 @@ export const Canvas = ({ setPosition, image, sizes }: canvasProps) => {
     }
 
     return (
-        <Box
-            position="relative"
-            p="8"
-            bg="#e9e9e9"
-            minWidth={sizes.width + 80}
-            minHeight="100%"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-        >
+        <Box position="relative" p="8" bg="#e9e9e9" minWidth={sizes.width + 80} minHeight="100%" display="flex">
             <Image
                 onMouseMove={(e) => {
                     const bound = e.currentTarget.getBoundingClientRect();
@@ -41,14 +40,20 @@ export const Canvas = ({ setPosition, image, sizes }: canvasProps) => {
                 }}
                 onClick={(e) => {
                     const bound = e.currentTarget.getBoundingClientRect();
-                    console.log({ x: e.clientX - bound.left, y: e.clientY - bound.top });
-
-                    setElements([
-                        ...elements,
-                        { type: "SIGN", position: { x: e.clientX - bound.left, y: e.clientY - bound.top } },
-                    ]);
+                    if (image) {
+                        const initialX = regraDe3(sizes.width, e.clientX - bound.left, image?.width);
+                        const initialY = regraDe3(sizes.height, e.clientY - bound.top, image?.height);
+                        setElements([
+                            ...elements,
+                            {
+                                type: "SIGN",
+                                position: { x: e.clientX - bound.left, y: e.clientY - bound.top },
+                                positionInitial: { x: initialX, y: initialY },
+                            },
+                        ]);
+                    }
                 }}
-                src={"/teste.png"}
+                src={image?.src}
                 width={sizes.width}
                 height={sizes.height}
                 maxWidth="none"
@@ -65,12 +70,19 @@ export const Canvas = ({ setPosition, image, sizes }: canvasProps) => {
                 }}
                 onDrop={(e) => {
                     const bound = e.currentTarget.getBoundingClientRect();
-                    console.log({ x: e.clientX - bound.left, y: e.clientY - bound.top });
 
-                    setElements([
-                        ...elements,
-                        { type: "SIGN", position: { x: e.clientX - bound.left, y: e.clientY - bound.top } },
-                    ]);
+                    if (image) {
+                        const initialX = regraDe3(sizes.width, e.clientX - bound.left, image?.width);
+                        const initialY = regraDe3(sizes.height, e.clientY - bound.top, image?.height);
+                        setElements([
+                            ...elements,
+                            {
+                                type: "SIGN",
+                                position: { x: e.clientX - bound.left, y: e.clientY - bound.top },
+                                positionInitial: { x: initialX, y: initialY },
+                            },
+                        ]);
+                    }
                 }}
             ></Image>
             {elements.map((element, index) => {
