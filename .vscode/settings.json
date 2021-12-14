@@ -2,6 +2,10 @@
     "conventionalCommits.scopes": [
         "Component: Canvas",
         "CSS: Global",
-        "Component: ButtonInitial"
+        "Component: ButtonInitial",
+        "Component: ButtonDate",
+        "Component: ButtonDateDay",
+        "Component: ButtonDateMonth",
+        "Component: ButtonDateYear",
     ]
 }
