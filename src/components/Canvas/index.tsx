@@ -39,62 +39,36 @@ export const Canvas = ({ setPosition, image, sizes, elements, setElements }: can
         setElements(newElements);
     }
 
+    function addElement(e: React.MouseEvent<HTMLImageElement, MouseEvent>) {
+        const bound = e.currentTarget.getBoundingClientRect();
+        if (image) {
+            const initialX = regraDe3(sizes.width, e.clientX - bound.left, image?.width);
+            const initialY = regraDe3(sizes.height, e.clientY - bound.top, image?.height);
+            setElements([
+                ...elements,
+                {
+                    id: uuidv4(),
+                    type: "SIGN",
+                    position: { x: e.clientX - bound.left, y: e.clientY - bound.top },
+                    positionInitial: { x: initialX, y: initialY },
+                },
+            ]);
+        }
+    }
+
     return (
         <Box position="relative" p="8" bg="#e9e9e9" minWidth={sizes.width + 80} minHeight="100%" display="flex">
             <Image
                 id="pdf-image"
                 cursor="copy"
-                onMouseMove={(e) => {
-                    const bound = e.currentTarget.getBoundingClientRect();
-                    setCoordinates(e.clientX - bound.left, e.clientY - bound.top);
-                }}
-                onClick={(e) => {
-                    const bound = e.currentTarget.getBoundingClientRect();
-                    if (image) {
-                        const initialX = regraDe3(sizes.width, e.clientX - bound.left, image?.width);
-                        const initialY = regraDe3(sizes.height, e.clientY - bound.top, image?.height);
-                        setElements([
-                            ...elements,
-                            {
-                                id: uuidv4(),
-                                type: "SIGN",
-                                position: { x: e.clientX - bound.left, y: e.clientY - bound.top },
-                                positionInitial: { x: initialX, y: initialY },
-                            },
-                        ]);
-                    }
-                }}
+                onClick={addElement}
                 src={image?.src}
                 width={sizes.width}
                 height={sizes.height}
                 maxWidth="none"
-                onDragEnter={(e) => {
-                    e.preventDefault();
-                }}
-                onDragLeave={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                }}
-                onDragOver={(event) => {
-                    event.stopPropagation();
-                    event.preventDefault();
-                }}
-                onDrop={(e) => {
-                    const arrayFilter = elements.filter((element) => element.id !== e.dataTransfer.getData("id"));
+                onMouseMove={(e) => {
                     const bound = e.currentTarget.getBoundingClientRect();
-                    if (image) {
-                        const initialX = regraDe3(sizes.width, e.clientX - bound.left, image?.width);
-                        const initialY = regraDe3(sizes.height, e.clientY - bound.top, image?.height);
-                        setElements([
-                            ...arrayFilter,
-                            {
-                                id: uuidv4(),
-                                type: "SIGN",
-                                position: { x: e.clientX - bound.left, y: e.clientY - bound.top },
-                                positionInitial: { x: initialX, y: initialY },
-                            },
-                        ]);
-                    }
+                    setCoordinates(e.clientX - bound.left, e.clientY - bound.top);
                 }}
             ></Image>
             {elements.map((element) => {
@@ -102,15 +76,16 @@ export const Canvas = ({ setPosition, image, sizes, elements, setElements }: can
                     <ButtonSign
                         id={element.id}
                         key={element.id}
-                        deleteElement={() => removeElement(element.id)}
                         cursor="move"
                         position="absolute"
                         top={element.position.y}
                         left={element.position.x}
+
+                        onDeleteElement={() => removeElement(element.id)}
                         onDragStart={(e) => {
                             e.dataTransfer.setData("id", element.id);
                         }}
-                        onMouseDown={(e) => {
+                        onMouseDown={(e) => {//NOTE - Quando o click do mouse é feito e segurado
                             e.preventDefault();
                             document.onmousemove = (event) => {
                                 event.preventDefault();
@@ -126,7 +101,7 @@ export const Canvas = ({ setPosition, image, sizes, elements, setElements }: can
                                 }
                             };
                         }}
-                        onMouseUp={(e) => {
+                        onMouseUp={(e) => {//NOTE - Quando o click do mouse é solto
                             const arrayFilter = elements.filter((button) => button.id !== element.id);
                             const pdfImage = document.getElementById("pdf-image");
                             if (pdfImage) {

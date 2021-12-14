@@ -4,10 +4,10 @@ import { BsFillPenFill } from "react-icons/bs";
 import Popup from "reactjs-popup";
 
 interface ButtonSignProps extends ChakraButtonProps {
-    deleteElement?(): void;
+    onDeleteElement?(): void;
 }
 
-export const ButtonSign = ({ deleteElement, ...rest }: ButtonSignProps) => {
+export const ButtonSign = ({ onDeleteElement, ...rest }: ButtonSignProps) => {
     const button = (
         <Button
             style={{ background: "var(--chakra-colors-pink-500)" }}
@@ -21,7 +21,7 @@ export const ButtonSign = ({ deleteElement, ...rest }: ButtonSignProps) => {
         </Button>
     );
 
-    return deleteElement ? (
+    return onDeleteElement ? (
         <Popup
             trigger={() => button}
             position="top center"
@@ -30,7 +30,7 @@ export const ButtonSign = ({ deleteElement, ...rest }: ButtonSignProps) => {
             closeOnDocumentClick
         >
             <Button
-                onClick={deleteElement}
+                onClick={onDeleteElement}
                 display="flex"
                 rightIcon={<AiFillDelete></AiFillDelete>}
                 style={{ background: "var(--chakra-colors-red-500)" }}
