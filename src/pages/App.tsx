@@ -1,7 +1,9 @@
-import { Box, ChakraProvider, Flex, HStack, Select, Text } from "@chakra-ui/react";
+import { Box, ChakraProvider, Flex, HStack, Select, Spacer, Text } from "@chakra-ui/react";
 import React from "react";
 import { GoArrowDown } from "react-icons/go";
 import useImage from "use-image";
+import { ButtonInitial } from "../components/ButtonInitial";
+import { ButtonSign } from "../components/ButtonSign";
 import { Canvas } from "../components/Canvas";
 import { SelectorBar } from "../components/SelectorBar";
 import { regraDe3 } from "../helper/calc";
@@ -16,6 +18,7 @@ interface elementsProps {
 
 export const App = () => {
     const [coordinates, setCoordinates] = React.useState({ x: 0, y: 0 });
+    const [selectedElement, setSelectedElement] = React.useState("SIGN");
     const [sizes, setSizes] = React.useState({ width: 0, height: 0 });
     const [zoom, setZoom] = React.useState(0.7);
     const [elements, setElements] = React.useState<elementsProps[]>([]);
@@ -37,12 +40,30 @@ export const App = () => {
         }
     }, [zoom, imagePdf]);
 
+    function handleShowSelectedElement() {
+        switch (selectedElement.toUpperCase()) {
+            case "SIGN":
+                return <ButtonSign></ButtonSign>;
+            default:
+                return <ButtonInitial></ButtonInitial>;
+        }
+    }
+
     return (
         <ChakraProvider theme={theme}>
             <Flex height="100vh">
-                <SelectorBar></SelectorBar>
+                <SelectorBar setSelectedElement={setSelectedElement}></SelectorBar>
                 <Flex m="8" flex="1" direction="column">
                     <HStack spacing="2" mb="3">
+                        <Text>
+                            <strong>Elemento selecionado:</strong> {handleShowSelectedElement()}
+                        </Text>
+                        <Spacer></Spacer>
+                        <Text>
+                            <strong>X:</strong> {Math.round(coordinates.x)}, <strong>Y:</strong>{" "}
+                            {Math.round(coordinates.y)}
+                        </Text>
+                        <Spacer></Spacer>
                         <Select
                             bg="pink.500"
                             fontWeight="bold"
@@ -63,13 +84,10 @@ export const App = () => {
                             <option value="1.1">110%</option>
                             <option value="1.2">120%</option>
                         </Select>
-                        <Text>
-                            <strong>X:</strong> {Math.round(coordinates.x)}, <strong>Y:</strong>{" "}
-                            {Math.round(coordinates.y)}
-                        </Text>
                     </HStack>
-                    <Box id="scroll-box" flex="1" overflow="auto" maxWidth={window.innerWidth - 220}>
+                    <Box id="scroll-box" flex="1" overflow="auto" maxWidth={window.innerWidth - 203}>
                         <Canvas
+                            selectedElement={selectedElement}
                             elements={elements}
                             setElements={setElements}
                             sizes={sizes}

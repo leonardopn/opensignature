@@ -3,11 +3,13 @@ import React, { Dispatch, SetStateAction } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { regraDe3 } from "../../helper/calc";
 import { ButtonSign } from "../ButtonSign";
+import { ButtonInitial } from "../ButtonInitial/index";
 
 interface canvasProps {
     setPosition: Dispatch<SetStateAction<{ x: number; y: number }>>;
     image: HTMLImageElement | undefined;
     sizes: { width: number; height: number };
+    selectedElement: string;
     elements: {
         id: string;
         type: string;
@@ -26,7 +28,16 @@ interface canvasProps {
     >;
 }
 
-export const Canvas = ({ setPosition, image, sizes, elements, setElements }: canvasProps) => {
+export const Canvas = ({ setPosition, image, sizes, elements, setElements, selectedElement }: canvasProps) => {
+    function handleShowSelectedElement(type: string) {
+        switch (type.toUpperCase()) {
+            case "SIGN":
+                return ButtonSign;
+            default:
+                return ButtonInitial;
+        }
+    }
+
     function setCoordinates(x: number, y: number) {
         setPosition({
             x,
@@ -48,7 +59,7 @@ export const Canvas = ({ setPosition, image, sizes, elements, setElements }: can
                 ...elements,
                 {
                     id: uuidv4(),
-                    type: "SIGN",
+                    type: selectedElement,
                     position: { x: e.clientX - bound.left, y: e.clientY - bound.top },
                     positionInitial: { x: initialX, y: initialY },
                 },
@@ -75,6 +86,7 @@ export const Canvas = ({ setPosition, image, sizes, elements, setElements }: can
 
     function dropElementAfterMove(elementId: string, e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         const arrayFilter = elements.filter((button) => button.id !== elementId);
+        const { type } = elements.find((button) => button.id === elementId) ?? {};
         const pdfImage = document.getElementById("pdf-image");
         if (pdfImage) {
             const bound = pdfImage.getBoundingClientRect();
@@ -85,7 +97,7 @@ export const Canvas = ({ setPosition, image, sizes, elements, setElements }: can
                     ...arrayFilter,
                     {
                         id: uuidv4(),
-                        type: "SIGN",
+                        type: type ?? "SIGN",
                         position: { x: e.clientX - bound.left, y: e.clientY - bound.top },
                         positionInitial: { x: initialX, y: initialY },
                     },
@@ -110,15 +122,15 @@ export const Canvas = ({ setPosition, image, sizes, elements, setElements }: can
                 }}
             ></Image>
             {elements.map((element) => {
+                const SelectedElement = handleShowSelectedElement(element.type);
                 return (
-                    <ButtonSign
+                    <SelectedElement
                         id={element.id}
                         key={element.id}
                         cursor="move"
                         position="absolute"
                         top={element.position.y}
                         left={element.position.x}
-                        
                         onDeleteElement={() => removeElement(element.id)}
                         onDragStart={(e) => {
                             e.dataTransfer.setData("id", element.id);
@@ -131,7 +143,7 @@ export const Canvas = ({ setPosition, image, sizes, elements, setElements }: can
                             //NOTE - Quando o click do mouse é solto
                             dropElementAfterMove(element.id, e);
                         }}
-                    ></ButtonSign>
+                    ></SelectedElement>
                 );
             })}
         </Box>

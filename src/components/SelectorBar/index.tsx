@@ -1,7 +1,12 @@
 import { Flex, Heading, VStack } from "@chakra-ui/react";
+import { ButtonInitial } from "../ButtonInitial";
 import { ButtonSign } from "../ButtonSign/index";
 
-export const SelectorBar = () => {
+interface selectorBarProps {
+    setSelectedElement: (value: string) => void;
+}
+
+export const SelectorBar = ({ setSelectedElement }: selectorBarProps) => {
     return (
         <Flex
             bg="gray.700"
@@ -17,7 +22,8 @@ export const SelectorBar = () => {
                 Opções
             </Heading>
             <VStack spacing="3">
-                <ButtonSign />
+                <ButtonSign onClick={(_) => setSelectedElement("SIGN")} />
+                <ButtonInitial onClick={(_) => setSelectedElement("INITIAL")} />
             </VStack>
         </Flex>
     );
