@@ -26,7 +26,7 @@ export const ButtonSign = ({ onDeleteElement, ...rest }: ButtonSignProps) => {
             trigger={() => button}
             position="top center"
             contentStyle={{ maxWidth: "fit-content" }}
-            on={["hover", "focus"]}
+            on={["hover"]}
             closeOnDocumentClick
         >
             <Button
