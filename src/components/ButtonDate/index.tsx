@@ -1,6 +1,7 @@
 import { Button, ButtonProps as ChakraButtonProps } from "@chakra-ui/react";
-import { AiFillDelete, AiFillCalendar } from "react-icons/ai";
+import { AiFillCalendar } from "react-icons/ai";
 import Popup from "reactjs-popup";
+import { ButtonDelete } from "../ButtonDelete";
 
 interface ButtonDateProps extends ChakraButtonProps {
     onDeleteElement?(): void;
@@ -28,14 +29,7 @@ export const ButtonDate = ({ onDeleteElement, ...rest }: ButtonDateProps) => {
             on={["hover"]}
             closeOnDocumentClick
         >
-            <Button
-                onClick={onDeleteElement}
-                display="flex"
-                rightIcon={<AiFillDelete></AiFillDelete>}
-                style={{ background: "var(--chakra-colors-red-500)" }}
-            >
-                Apagar
-            </Button>
+            <ButtonDelete onDeleteElement={onDeleteElement} />
         </Popup>
     ) : (
         button

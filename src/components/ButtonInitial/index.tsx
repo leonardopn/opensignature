@@ -1,7 +1,7 @@
 import { Button, ButtonProps as ChakraButtonProps } from "@chakra-ui/react";
-import { AiFillDelete } from "react-icons/ai";
 import { FaSignature } from "react-icons/fa";
 import Popup from "reactjs-popup";
+import { ButtonDelete } from "../ButtonDelete";
 
 interface ButtonSignProps extends ChakraButtonProps {
     onDeleteElement?(): void;
@@ -9,14 +9,7 @@ interface ButtonSignProps extends ChakraButtonProps {
 
 export const ButtonInitial = ({ onDeleteElement, ...rest }: ButtonSignProps) => {
     const button = (
-        <Button
-            style={{ background: "var(--chakra-colors-pink-500)" }}
-            _hover={{ background: "var(--chakra-colors-blue-600)" }}
-            p="2"
-            borderRadius="10"
-            rightIcon={<FaSignature />}
-            {...rest}
-        >
+        <Button colorScheme="pink" p="2" borderRadius="10" rightIcon={<FaSignature />} {...rest}>
             Rubrica
         </Button>
     );
@@ -29,14 +22,7 @@ export const ButtonInitial = ({ onDeleteElement, ...rest }: ButtonSignProps) => 
             on={["hover"]}
             closeOnDocumentClick
         >
-            <Button
-                onClick={onDeleteElement}
-                display="flex"
-                rightIcon={<AiFillDelete></AiFillDelete>}
-                style={{ background: "var(--chakra-colors-red-500)" }}
-            >
-                Apagar
-            </Button>
+            <ButtonDelete onDeleteElement={onDeleteElement} />
         </Popup>
     ) : (
         button

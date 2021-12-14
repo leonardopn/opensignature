@@ -2,8 +2,7 @@ import { Box, Image } from "@chakra-ui/react";
 import React, { Dispatch, SetStateAction } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { regraDe3 } from "../../helper/calc";
-import { ButtonSign } from "../ButtonSign";
-import { ButtonInitial } from "../ButtonInitial/index";
+import { selectButton } from "../../helper/switch";
 
 interface canvasProps {
     setPosition: Dispatch<SetStateAction<{ x: number; y: number }>>;
@@ -29,15 +28,6 @@ interface canvasProps {
 }
 
 export const Canvas = ({ setPosition, image, sizes, elements, setElements, selectedElement }: canvasProps) => {
-    function handleShowSelectedElement(type: string) {
-        switch (type.toUpperCase()) {
-            case "SIGN":
-                return ButtonSign;
-            default:
-                return ButtonInitial;
-        }
-    }
-
     function setCoordinates(x: number, y: number) {
         setPosition({
             x,
@@ -122,7 +112,7 @@ export const Canvas = ({ setPosition, image, sizes, elements, setElements, selec
                 }}
             ></Image>
             {elements.map((element) => {
-                const SelectedElement = handleShowSelectedElement(element.type);
+                const SelectedElement = selectButton(element.type);
                 return (
                     <SelectedElement
                         id={element.id}

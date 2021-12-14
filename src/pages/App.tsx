@@ -2,11 +2,10 @@ import { Box, ChakraProvider, Flex, HStack, Select, Spacer, Text } from "@chakra
 import React from "react";
 import { GoArrowDown } from "react-icons/go";
 import useImage from "use-image";
-import { ButtonInitial } from "../components/ButtonInitial";
-import { ButtonSign } from "../components/ButtonSign";
 import { Canvas } from "../components/Canvas";
 import { SelectorBar } from "../components/SelectorBar";
 import { regraDe3 } from "../helper/calc";
+import { selectButton } from "../helper/switch";
 import { theme } from "../styles/theme/theme";
 
 interface elementsProps {
@@ -40,15 +39,6 @@ export const App = () => {
         }
     }, [zoom, imagePdf]);
 
-    function handleShowSelectedElement() {
-        switch (selectedElement.toUpperCase()) {
-            case "SIGN":
-                return <ButtonSign></ButtonSign>;
-            default:
-                return <ButtonInitial></ButtonInitial>;
-        }
-    }
-
     return (
         <ChakraProvider theme={theme}>
             <Flex height="100vh">
@@ -56,7 +46,7 @@ export const App = () => {
                 <Flex m="8" flex="1" direction="column">
                     <HStack spacing="2" mb="3">
                         <Text>
-                            <strong>Elemento selecionado:</strong> {handleShowSelectedElement()}
+                            <strong>Elemento selecionado:</strong> {React.createElement(selectButton(selectedElement))}
                         </Text>
                         <Spacer></Spacer>
                         <Text>

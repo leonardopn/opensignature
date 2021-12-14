@@ -1,6 +1,7 @@
 import { Button, ButtonProps as ChakraButtonProps } from "@chakra-ui/react";
-import { AiFillDelete, AiFillCalendar } from "react-icons/ai";
+import { AiFillCalendar } from "react-icons/ai";
 import Popup from "reactjs-popup";
+import { ButtonDelete } from "../ButtonDelete";
 
 interface ButtonDateYearProps extends ChakraButtonProps {
     onDeleteElement?(): void;
@@ -8,14 +9,7 @@ interface ButtonDateYearProps extends ChakraButtonProps {
 
 export const ButtonDateYear = ({ onDeleteElement, ...rest }: ButtonDateYearProps) => {
     const button = (
-        <Button
-            style={{ background: "var(--chakra-colors-pink-500)" }}
-            _hover={{ background: "var(--chakra-colors-blue-600)" }}
-            p="2"
-            borderRadius="10"
-            rightIcon={<AiFillCalendar />}
-            {...rest}
-        >
+        <Button colorScheme="purple" p="2" borderRadius="10" rightIcon={<AiFillCalendar />} {...rest}>
             Ano
         </Button>
     );
@@ -28,14 +22,7 @@ export const ButtonDateYear = ({ onDeleteElement, ...rest }: ButtonDateYearProps
             on={["hover"]}
             closeOnDocumentClick
         >
-            <Button
-                onClick={onDeleteElement}
-                display="flex"
-                rightIcon={<AiFillDelete></AiFillDelete>}
-                style={{ background: "var(--chakra-colors-red-500)" }}
-            >
-                Apagar
-            </Button>
+            <ButtonDelete onDeleteElement={onDeleteElement} />
         </Popup>
     ) : (
         button
