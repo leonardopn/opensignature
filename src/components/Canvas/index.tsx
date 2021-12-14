@@ -42,6 +42,7 @@ export const Canvas = ({ setPosition, image, sizes, elements, setElements }: can
     return (
         <Box position="relative" p="8" bg="#e9e9e9" minWidth={sizes.width + 80} minHeight="100%" display="flex">
             <Image
+                id="pdf-image"
                 cursor="copy"
                 onMouseMove={(e) => {
                     const bound = e.currentTarget.getBoundingClientRect();
@@ -99,14 +100,51 @@ export const Canvas = ({ setPosition, image, sizes, elements, setElements }: can
             {elements.map((element) => {
                 return (
                     <ButtonSign
+                        id={element.id}
+                        key={element.id}
                         deleteElement={() => removeElement(element.id)}
                         cursor="move"
-                        key={element.id}
                         position="absolute"
                         top={element.position.y}
                         left={element.position.x}
                         onDragStart={(e) => {
                             e.dataTransfer.setData("id", element.id);
+                        }}
+                        onMouseDown={(e) => {
+                            e.preventDefault();
+                            document.onmousemove = (event) => {
+                                event.preventDefault();
+                                const pdfImage = document.getElementById("pdf-image");
+                                if (pdfImage) {
+                                    const bound = pdfImage.getBoundingClientRect();
+
+                                    const el = document.getElementById(element.id);
+                                    if (el) {
+                                        el.style.top = `${event.clientY - bound.top}px`;
+                                        el.style.left = `${event.clientX - bound.left}px`;
+                                    }
+                                }
+                            };
+                        }}
+                        onMouseUp={(e) => {
+                            const arrayFilter = elements.filter((button) => button.id !== element.id);
+                            const pdfImage = document.getElementById("pdf-image");
+                            if (pdfImage) {
+                                const bound = pdfImage.getBoundingClientRect();
+                                if (image) {
+                                    const initialX = regraDe3(sizes.width, e.clientX - bound.left, image?.width);
+                                    const initialY = regraDe3(sizes.height, e.clientY - bound.top, image?.height);
+                                    setElements([
+                                        ...arrayFilter,
+                                        {
+                                            id: uuidv4(),
+                                            type: "SIGN",
+                                            position: { x: e.clientX - bound.left, y: e.clientY - bound.top },
+                                            positionInitial: { x: initialX, y: initialY },
+                                        },
+                                    ]);
+                                }
+                            }
                         }}
                     ></ButtonSign>
                 );

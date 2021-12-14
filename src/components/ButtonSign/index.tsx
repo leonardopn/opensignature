@@ -10,7 +10,6 @@ interface ButtonSignProps extends ChakraButtonProps {
 export const ButtonSign = ({ deleteElement, ...rest }: ButtonSignProps) => {
     const button = (
         <Button
-            draggable="true"
             style={{ background: "var(--chakra-colors-pink-500)" }}
             _hover={{ background: "var(--chakra-colors-blue-600)" }}
             p="2"

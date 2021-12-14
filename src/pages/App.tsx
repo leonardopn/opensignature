@@ -19,7 +19,7 @@ export const App = () => {
     const [sizes, setSizes] = React.useState({ width: 0, height: 0 });
     const [zoom, setZoom] = React.useState(0.7);
     const [elements, setElements] = React.useState<elementsProps[]>([]);
-    const [imagePdf] = useImage("/teste2.png");
+    const [imagePdf] = useImage("/teste.png");
 
     React.useEffect(() => {
         if (imagePdf?.width && imagePdf?.height) {
