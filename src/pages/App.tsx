@@ -8,6 +8,7 @@ import { regraDe3 } from "../helper/calc";
 import { theme } from "../styles/theme/theme";
 
 interface elementsProps {
+    id: string;
     type: string;
     position: { x: number; y: number };
     positionInitial: { x: number; y: number };
@@ -18,7 +19,7 @@ export const App = () => {
     const [sizes, setSizes] = React.useState({ width: 0, height: 0 });
     const [zoom, setZoom] = React.useState(0.7);
     const [elements, setElements] = React.useState<elementsProps[]>([]);
-    const [imagePdf] = useImage("/teste.png");
+    const [imagePdf] = useImage("/teste2.png");
 
     React.useEffect(() => {
         if (imagePdf?.width && imagePdf?.height) {

@@ -3,6 +3,7 @@ import * as React from "react";
 import ReactDOM from "react-dom";
 import { App } from "./pages/App";
 import "reactjs-popup/dist/index.css";
+import "./styles/global.css";
 
 ReactDOM.render(
     <React.StrictMode>

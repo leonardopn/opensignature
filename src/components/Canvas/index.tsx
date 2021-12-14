@@ -1,5 +1,6 @@
 import { Box, Image } from "@chakra-ui/react";
 import React, { Dispatch, SetStateAction } from "react";
+import { v4 as uuidv4 } from "uuid";
 import { regraDe3 } from "../../helper/calc";
 import { ButtonSign } from "../ButtonSign";
 
@@ -8,6 +9,7 @@ interface canvasProps {
     image: HTMLImageElement | undefined;
     sizes: { width: number; height: number };
     elements: {
+        id: string;
         type: string;
         position: { x: number; y: number };
         positionInitial: { x: number; y: number };
@@ -15,6 +17,7 @@ interface canvasProps {
     setElements: Dispatch<
         SetStateAction<
             {
+                id: string;
                 type: string;
                 position: { x: number; y: number };
                 positionInitial: { x: number; y: number };
@@ -31,9 +34,15 @@ export const Canvas = ({ setPosition, image, sizes, elements, setElements }: can
         });
     }
 
+    function removeElement(id: string) {
+        const newElements = elements.filter((element) => element.id !== id);
+        setElements(newElements);
+    }
+
     return (
         <Box position="relative" p="8" bg="#e9e9e9" minWidth={sizes.width + 80} minHeight="100%" display="flex">
             <Image
+                cursor="copy"
                 onMouseMove={(e) => {
                     const bound = e.currentTarget.getBoundingClientRect();
                     setCoordinates(e.clientX - bound.left, e.clientY - bound.top);
@@ -46,6 +55,7 @@ export const Canvas = ({ setPosition, image, sizes, elements, setElements }: can
                         setElements([
                             ...elements,
                             {
+                                id: uuidv4(),
                                 type: "SIGN",
                                 position: { x: e.clientX - bound.left, y: e.clientY - bound.top },
                                 positionInitial: { x: initialX, y: initialY },
@@ -61,7 +71,7 @@ export const Canvas = ({ setPosition, image, sizes, elements, setElements }: can
                     e.preventDefault();
                 }}
                 onDragLeave={(e) => {
-                    e.stopPropagation(); //
+                    e.stopPropagation();
                     e.preventDefault();
                 }}
                 onDragOver={(event) => {
@@ -69,14 +79,15 @@ export const Canvas = ({ setPosition, image, sizes, elements, setElements }: can
                     event.preventDefault();
                 }}
                 onDrop={(e) => {
+                    const arrayFilter = elements.filter((element) => element.id !== e.dataTransfer.getData("id"));
                     const bound = e.currentTarget.getBoundingClientRect();
-
                     if (image) {
                         const initialX = regraDe3(sizes.width, e.clientX - bound.left, image?.width);
                         const initialY = regraDe3(sizes.height, e.clientY - bound.top, image?.height);
                         setElements([
-                            ...elements,
+                            ...arrayFilter,
                             {
+                                id: uuidv4(),
                                 type: "SIGN",
                                 position: { x: e.clientX - bound.left, y: e.clientY - bound.top },
                                 positionInitial: { x: initialX, y: initialY },
@@ -85,14 +96,18 @@ export const Canvas = ({ setPosition, image, sizes, elements, setElements }: can
                     }
                 }}
             ></Image>
-            {elements.map((element, index) => {
+            {elements.map((element) => {
                 return (
                     <ButtonSign
-                        key={index}
+                        deleteElement={() => removeElement(element.id)}
+                        cursor="move"
+                        key={element.id}
                         position="absolute"
                         top={element.position.y}
                         left={element.position.x}
-                        onClick={(e) => console.log(e.currentTarget.getClientRects())}
+                        onDragStart={(e) => {
+                            e.dataTransfer.setData("id", element.id);
+                        }}
                     ></ButtonSign>
                 );
             })}
