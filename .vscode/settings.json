@@ -1,6 +1,7 @@
 {
     "conventionalCommits.scopes": [
         "Component: Canvas",
-        "CSS: Global"
+        "CSS: Global",
+        "Component: ButtonInitial"
     ]
 }
