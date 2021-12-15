@@ -35,6 +35,11 @@ export const Canvas = ({ setPosition, image, sizes, elements, setElements, selec
         });
     }
 
+    function getCanvasBound() {
+        const pdfImage = document.getElementById("pdf-image");
+        return pdfImage?.getBoundingClientRect();
+    }
+
     function removeElement(id: string) {
         const newElements = elements.filter((element) => element.id !== id);
         setElements(newElements);
@@ -64,18 +69,17 @@ export const Canvas = ({ setPosition, image, sizes, elements, setElements, selec
         }
     }
 
-    function moveElement(elementId: string, e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-        e.preventDefault();
-        document.onmousemove = (event) => {
-            event.preventDefault();
-            const pdfImage = document.getElementById("pdf-image");
-            if (pdfImage) {
-                const bound = pdfImage.getBoundingClientRect();
-
+    function moveElement(elementId: string, mouseEvent: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+        mouseEvent.preventDefault();
+        document.onmousemove = (mouseEventMove) => {
+            mouseEventMove.preventDefault();
+            const bound = getCanvasBound();
+            if (bound) {
                 const el = document.getElementById(elementId);
                 if (el) {
-                    el.style.top = `${event.clientY - bound.top}px`;
-                    el.style.left = `${event.clientX - bound.left}px`;
+                    el.style.top = `${mouseEventMove.clientY - bound.top}px`;
+                    el.style.left = `${mouseEventMove.clientX - bound.left}px`;
+                    setCoordinates(mouseEventMove.clientX - bound.left, mouseEventMove.clientY - bound.top);
                 }
             }
         };
@@ -84,11 +88,10 @@ export const Canvas = ({ setPosition, image, sizes, elements, setElements, selec
     function dropElementAfterMove(elementId: string, e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         const arrayFilter = elements.filter((button) => button.id !== elementId);
         const { type } = elements.find((button) => button.id === elementId) ?? {};
-        
-        const pdfImage = document.getElementById("pdf-image");
-        if (pdfImage) {
+
+        const bound = getCanvasBound();
+        if (bound) {
             if (image) {
-                const bound = pdfImage.getBoundingClientRect();
                 const { x, y } = calcEquivalentPosition(
                     sizes.width,
                     sizes.height,
@@ -124,8 +127,7 @@ export const Canvas = ({ setPosition, image, sizes, elements, setElements, selec
                 onMouseMove={(e) => {
                     const bound = e.currentTarget.getBoundingClientRect();
                     setCoordinates(e.clientX - bound.left, e.clientY - bound.top);
-                }}
-            ></Image>
+                }}></Image>
             {elements.map((element) => {
                 const SelectedElement = selectButton(element.type);
                 return (
@@ -147,8 +149,7 @@ export const Canvas = ({ setPosition, image, sizes, elements, setElements, selec
                         onMouseUp={(e) => {
                             //NOTE - Quando o click do mouse é solto
                             dropElementAfterMove(element.id, e);
-                        }}
-                    ></SelectedElement>
+                        }}></SelectedElement>
                 );
             })}
         </Box>

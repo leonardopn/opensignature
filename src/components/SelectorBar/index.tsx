@@ -20,8 +20,7 @@ export const SelectorBar = ({ setSelectedElement }: selectorBarProps) => {
             borderBottomRightRadius="8"
             borderTopRightRadius="8"
             p="5"
-            direction="column"
-        >
+            direction="column">
             <Heading fontSize="2xl" mb="4">
                 Opções
             </Heading>
