@@ -9,6 +9,7 @@
         "Component: ButtonDateYear",
         "Component: SelectorBar",
         "Helper: switch",
-        "Component: ButtonDelete"
+        "Component: ButtonDelete",
+        "Helper: calc"
     ]
 }

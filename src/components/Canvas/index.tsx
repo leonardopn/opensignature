@@ -1,7 +1,7 @@
 import { Box, Image } from "@chakra-ui/react";
 import React, { Dispatch, SetStateAction } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { regraDe3 } from "../../helper/calc";
+import { calcEquivalentPosition } from "../../helper/calc";
 import { selectButton } from "../../helper/switch";
 
 interface canvasProps {
@@ -43,15 +43,22 @@ export const Canvas = ({ setPosition, image, sizes, elements, setElements, selec
     function addElement(e: React.MouseEvent<HTMLImageElement, MouseEvent>) {
         const bound = e.currentTarget.getBoundingClientRect();
         if (image) {
-            const initialX = regraDe3(sizes.width, e.clientX - bound.left, image?.width);
-            const initialY = regraDe3(sizes.height, e.clientY - bound.top, image?.height);
+            const { x, y } = calcEquivalentPosition(
+                sizes.width,
+                sizes.height,
+                image?.width,
+                image?.height,
+                e.clientX - bound.x,
+                e.clientY - bound.y
+            );
+
             setElements([
                 ...elements,
                 {
                     id: uuidv4(),
                     type: selectedElement,
                     position: { x: e.clientX - bound.left, y: e.clientY - bound.top },
-                    positionInitial: { x: initialX, y: initialY },
+                    positionInitial: { x, y },
                 },
             ]);
         }
@@ -77,19 +84,27 @@ export const Canvas = ({ setPosition, image, sizes, elements, setElements, selec
     function dropElementAfterMove(elementId: string, e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         const arrayFilter = elements.filter((button) => button.id !== elementId);
         const { type } = elements.find((button) => button.id === elementId) ?? {};
+        
         const pdfImage = document.getElementById("pdf-image");
         if (pdfImage) {
-            const bound = pdfImage.getBoundingClientRect();
             if (image) {
-                const initialX = regraDe3(sizes.width, e.clientX - bound.left, image?.width);
-                const initialY = regraDe3(sizes.height, e.clientY - bound.top, image?.height);
+                const bound = pdfImage.getBoundingClientRect();
+                const { x, y } = calcEquivalentPosition(
+                    sizes.width,
+                    sizes.height,
+                    image?.width,
+                    image?.height,
+                    e.clientX - bound.x,
+                    e.clientY - bound.y
+                );
+
                 setElements([
                     ...arrayFilter,
                     {
                         id: uuidv4(),
                         type: type ?? "SIGN",
                         position: { x: e.clientX - bound.left, y: e.clientY - bound.top },
-                        positionInitial: { x: initialX, y: initialY },
+                        positionInitial: { x, y },
                     },
                 ]);
             }
