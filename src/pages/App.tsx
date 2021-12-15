@@ -26,16 +26,18 @@ export const App = () => {
     React.useEffect(() => {
         if (imagePdf?.width && imagePdf?.height) {
             setSizes({ width: imagePdf?.width * zoom, height: imagePdf?.height * zoom });
-            const newArray = elements.map((el) => {
-                return {
-                    ...el,
-                    position: {
-                        x: regraDe3(imagePdf?.width, el.positionInitial.x, imagePdf?.width * zoom),
-                        y: regraDe3(imagePdf?.height, el.positionInitial.y, imagePdf?.height * zoom),
-                    },
-                };
+
+            setElements((elements) => {
+                return elements.map((el) => {
+                    return {
+                        ...el,
+                        position: {
+                            x: regraDe3(imagePdf?.width, el.positionInitial.x, imagePdf?.width * zoom),
+                            y: regraDe3(imagePdf?.height, el.positionInitial.y, imagePdf?.height * zoom),
+                        },
+                    };
+                });
             });
-            setElements(newArray);
         }
     }, [zoom, imagePdf]);
 
@@ -63,8 +65,7 @@ export const App = () => {
                             icon={<GoArrowDown></GoArrowDown>}
                             value={zoom}
                             onChange={(e) => setZoom(+e.target.value)}
-                            width="fit-content"
-                        >
+                            width="fit-content">
                             <option value="0.5">50%</option>
                             <option value="0.6">60%</option>
                             <option value="0.7">70%</option>
@@ -82,8 +83,7 @@ export const App = () => {
                             setElements={setElements}
                             sizes={sizes}
                             image={imagePdf}
-                            setPosition={setCoordinates}
-                        ></Canvas>
+                            setPosition={setCoordinates}></Canvas>
                     </Box>
                 </Flex>
             </Flex>
