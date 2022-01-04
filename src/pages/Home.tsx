@@ -1,20 +1,23 @@
-import { Button, Flex, Heading, Image, Input, VStack } from "@chakra-ui/react";
+import { Button, Flex, Heading, Input, VStack } from "@chakra-ui/react";
 import React from "react";
-import { convertPdfToImages, loadPdf, readFileData } from "../helper/pdf";
+import { connect } from "react-redux";
+import { Dispatch } from "redux";
+import { convertPdfToImages } from "../helper/pdf";
+import { setPdf } from "../store/actions/pdf.action";
+import { StateProps } from "../store/types/types.redux";
 
-export const Home = () => {
-    const [file, setFile] = React.useState<File>();
-    const [image, setImage] = React.useState<string>();
+type HomeProps = {
+    pdf: string;
+    setPdf: (pdf: string) => void;
+};
 
+const Home = ({ pdf, setPdf }: HomeProps) => {
     async function onChangeFile(event: React.ChangeEvent<HTMLInputElement>) {
         if (event.target?.files instanceof FileList) {
             const archive = event.target.files[0];
             if (archive) {
-                setFile(archive);
                 const a = await convertPdfToImages(archive);
-                setImage(a[0]);
-            } else {
-                setFile(undefined);
+                setPdf(a[0]);
             }
         }
     }
@@ -35,8 +38,26 @@ export const Home = () => {
                 </Heading>
                 <Input type="file" onChange={onChangeFile}></Input>
                 <Button colorScheme="pink">Processar</Button>
-                <img src={image}></img>
+                <img src={pdf} alt=""></img>
             </VStack>
+            {console.log(pdf)}
         </Flex>
     );
 };
+
+const mapStateToProps = (states: StateProps) => {
+    return {
+        pdf: states.pdf,
+    };
+};
+
+const mapDispatchToProps = (dispatch: Dispatch) => {
+    return {
+        setPdf(pdf: string) {
+            const action = setPdf(pdf);
+            dispatch(action);
+        },
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);

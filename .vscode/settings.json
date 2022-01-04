@@ -12,6 +12,7 @@
         "Component: ButtonDelete",
         "Helper: calc",
         "Component: Routes",
-        "Page: Home"
+        "Page: Home",
+        "Redux"
     ]
 }

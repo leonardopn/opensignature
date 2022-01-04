@@ -2,7 +2,7 @@ import { ChakraProvider } from "@chakra-ui/react";
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { App } from "../pages/App";
-import { Home } from "../pages/Home";
+import Home from "../pages/Home";
 import { theme } from "../styles/theme/theme";
 
 export const AppRoutes = () => {
