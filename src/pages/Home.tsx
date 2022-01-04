@@ -2,7 +2,7 @@ import { Button, Flex, Heading, Input, VStack } from "@chakra-ui/react";
 import React from "react";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
-import { convertPdfToImages } from "../helper/pdf";
+import { api } from "../services/api";
 import { setPdf } from "../store/actions/pdf.action";
 import { StateProps } from "../store/types/types.redux";
 
@@ -13,12 +13,19 @@ type HomeProps = {
 
 const Home = ({ pdf, setPdf }: HomeProps) => {
     async function onChangeFile(event: React.ChangeEvent<HTMLInputElement>) {
+        console.log("oi");
         if (event.target?.files instanceof FileList) {
             const archive = event.target.files[0];
-            if (archive) {
-                const a = await convertPdfToImages(archive);
-                setPdf(a[0]);
-            }
+            const formData = new FormData();
+            formData.append("file", archive);
+
+            const { data } = await api.post("/upload", formData, {
+                headers: {
+                    "Content-Type": `multipart/form-data; `,
+                },
+            });
+
+            setPdf(data.image);
         }
     }
 
@@ -38,9 +45,8 @@ const Home = ({ pdf, setPdf }: HomeProps) => {
                 </Heading>
                 <Input type="file" onChange={onChangeFile}></Input>
                 <Button colorScheme="pink">Processar</Button>
-                <img src={pdf} alt=""></img>
+                <img src={"data:image/jpg;base64," + pdf} alt=""></img>
             </VStack>
-            {console.log(pdf)}
         </Flex>
     );
 };

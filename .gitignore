@@ -25,3 +25,5 @@ yarn-error.log*
 teste.png
 teste2.png
 teste2.jpg
+
+.env
