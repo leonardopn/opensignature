@@ -1,19 +1,17 @@
 import { Button, Flex, Heading, Input, VStack } from "@chakra-ui/react";
 import React from "react";
 import { connect } from "react-redux";
+import { Link } from "react-router-dom";
 import { Dispatch } from "redux";
 import { api } from "../services/api";
 import { setPdf } from "../store/actions/pdf.action";
-import { StateProps } from "../store/types/types.redux";
 
 type HomeProps = {
-    pdf: string;
     setPdf: (pdf: string) => void;
 };
 
-const Home = ({ pdf, setPdf }: HomeProps) => {
+const Home = ({ setPdf }: HomeProps) => {
     async function onChangeFile(event: React.ChangeEvent<HTMLInputElement>) {
-        console.log("oi");
         if (event.target?.files instanceof FileList) {
             const archive = event.target.files[0];
             const formData = new FormData();
@@ -44,17 +42,14 @@ const Home = ({ pdf, setPdf }: HomeProps) => {
                     Selecionar arquivo PDF
                 </Heading>
                 <Input type="file" onChange={onChangeFile}></Input>
-                <Button colorScheme="pink">Processar</Button>
-                <img src={"data:image/jpg;base64," + pdf} alt=""></img>
+                <Link to="/edit-pdf">
+                    <Button colorScheme="pink" w="100%">
+                        Processar
+                    </Button>
+                </Link>
             </VStack>
         </Flex>
     );
-};
-
-const mapStateToProps = (states: StateProps) => {
-    return {
-        pdf: states.pdf,
-    };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch) => {
@@ -66,4 +61,4 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+export default connect(null, mapDispatchToProps)(Home);

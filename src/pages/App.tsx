@@ -1,11 +1,13 @@
 import { Box, Flex, HStack, Select, Spacer, Text } from "@chakra-ui/react";
 import React from "react";
 import { GoArrowDown } from "react-icons/go";
+import { connect } from "react-redux";
 import useImage from "use-image";
 import { Canvas } from "../components/Canvas";
 import { SelectorBar } from "../components/SelectorBar";
 import { regraDe3 } from "../helper/calc";
 import { selectButton } from "../helper/switch";
+import { StateProps } from "../store/types/types.redux";
 
 interface elementsProps {
     id: string;
@@ -14,13 +16,21 @@ interface elementsProps {
     positionInitial: { x: number; y: number };
 }
 
-export const App = () => {
+type AppProps = {
+    imageBase64?: string;
+};
+
+const App = ({ imageBase64 }: AppProps) => {
     const [coordinates, setCoordinates] = React.useState({ x: 0, y: 0 });
     const [selectedElement, setSelectedElement] = React.useState("SIGN");
     const [sizes, setSizes] = React.useState({ width: 0, height: 0 });
     const [zoom, setZoom] = React.useState(0.7);
     const [elements, setElements] = React.useState<elementsProps[]>([]);
-    const [imagePdf] = useImage("/teste.png");
+    const [imagePdf] = useImage("data:image/jpg;base64," + imageBase64 ?? "");
+
+    if (!imageBase64) {
+        window.location.href = "/";
+    }
 
     React.useEffect(() => {
         if (imagePdf?.width && imagePdf?.height) {
@@ -86,3 +96,11 @@ export const App = () => {
         </Flex>
     );
 };
+
+const mapStateToProps = (states: StateProps) => {
+    return {
+        imageBase64: states.pdf,
+    };
+};
+
+export default connect(mapStateToProps, null)(App);
