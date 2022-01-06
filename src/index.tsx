@@ -6,6 +6,7 @@ import "reactjs-popup/dist/index.css";
 import { AppRoutes } from "./routes/router";
 import createStore from "./store/store";
 import "./styles/global.css";
+import 'reactjs-popup/dist/index.css';
 
 const store = createStore();
 

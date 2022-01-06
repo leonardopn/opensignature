@@ -15,8 +15,6 @@ export const SelectorBar = ({ setSelectedElement }: selectorBarProps) => {
         <Flex
             bg="gray.700"
             height="fit-content"
-            position="sticky"
-            top="8"
             borderBottomRightRadius="8"
             borderTopRightRadius="8"
             p="5"

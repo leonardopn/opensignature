@@ -1,12 +1,15 @@
-import { Box, Flex, HStack, Select, Spacer, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, HStack, Select, Spacer, Text, useDisclosure, VStack } from "@chakra-ui/react";
 import React from "react";
 import { GoArrowDown } from "react-icons/go";
 import { connect } from "react-redux";
 import useImage from "use-image";
 import { Canvas } from "../components/Canvas";
+import { Modal } from "../components/Modal/Modal";
+import { ModalContentSign } from "../components/Modal/ModalContent/ModalContentSign";
 import { SelectorBar } from "../components/SelectorBar";
 import { regraDe3 } from "../helper/calc";
 import { selectButton } from "../helper/switch";
+import { api } from "../services/api";
 import { StateProps } from "../store/types/types.redux";
 
 interface elementsProps {
@@ -27,10 +30,11 @@ const App = ({ imageBase64 }: AppProps) => {
     const [zoom, setZoom] = React.useState(0.7);
     const [elements, setElements] = React.useState<elementsProps[]>([]);
     const [imagePdf] = useImage("data:image/jpg;base64," + imageBase64 ?? "");
+    const { isOpen, onOpen, onClose } = useDisclosure();
 
-    if (!imageBase64) {
-        window.location.href = "/";
-    }
+    // if (!imageBase64) {
+    //     window.location.href = "/";
+    // }
 
     React.useEffect(() => {
         if (imagePdf?.width && imagePdf?.height) {
@@ -50,9 +54,25 @@ const App = ({ imageBase64 }: AppProps) => {
         }
     }, [zoom, imagePdf]);
 
+    async function handleClick() {
+        // api.post("/mark-to-sign", elements);
+        onOpen();
+    }
+
     return (
         <Flex height="100vh">
-            <SelectorBar setSelectedElement={setSelectedElement}></SelectorBar>
+            <Modal title="Como deseja Assinar?" isOpen={isOpen} onClose={onClose} size="xl">
+                <ModalContentSign>{}</ModalContentSign>
+            </Modal>
+            <VStack justifyContent="space-between" mt="8" mb="8">
+                <SelectorBar setSelectedElement={setSelectedElement}></SelectorBar>
+                <HStack width="100%" pl="10px" pr="10px">
+                    <Button colorScheme="green" flex="1" onClick={handleClick}>
+                        Enviar
+                    </Button>
+                </HStack>
+            </VStack>
+
             <Flex m="8" flex="1" direction="column">
                 <HStack spacing="2" mb="3">
                     <Text>
